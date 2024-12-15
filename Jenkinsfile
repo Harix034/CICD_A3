@@ -12,15 +12,18 @@ pipeline {
             steps {
                 echo 'Building the application...'
                 sh 'npm install'
+                echo 'Creating deployment package...'
+                sh 'zip -r function.zip .'
             }
         }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying to Azure Function App...'
-                sh """
+                sh '''
                     az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
                     az functionapp deployment source config-zip --resource-group $RESOURCE_GROUP --name $FUNCTION_APP_NAME --src function.zip
-                """
+                '''
             }
         }
     }
